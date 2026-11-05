@@ -1,0 +1,167 @@
+seed: 7
+paths:
+  traces: data
+  results: results
+data:
+  slots_per_day: 1440
+  days: 11
+  nodes: 10
+  services: 30
+  channels:
+  - cpu
+  - memory
+  - request_rate
+  - network
+  burst_count_range:
+  - 2
+  - 6
+  burst_duration_range:
+  - 5
+  - 35
+  burst_intensity_range:
+  - 0.12
+  - 0.42
+  background_channel_scale:
+  - 0.16
+  - 0.13
+  - 0.11
+  - 0.12
+  entity_scale_range:
+  - 0.7
+  - 1.35
+  phase_range:
+  - -3.141592653589793
+  - 3.141592653589793
+  shared_signal_scale: 0.025
+  shared_noise_std:
+    background: 0.035
+    service: 0.045
+  channel_noise_std: 0.025
+  channel_correlation_range:
+  - 0.25
+  - 0.55
+  burst_channel_effect_range:
+  - 0.45
+  - 1.0
+  daily_amplitude_range:
+  - 0.08
+  - 0.25
+  weekly_amplitude_range:
+  - 0.02
+  - 0.1
+  train_fraction: 0.6
+  validation_fraction: 0.2
+forecast:
+  window: 30
+  horizon: 10
+  evaluation_step: 30
+  inference_batch_size: 256
+  arima_order:
+  - 1
+  - 0
+  - 0
+  training_stride: 5
+  epochs: 10
+  patience: 3
+  batch_size: 256
+  hidden_size: 64
+  layers: 1
+  learning_rate: 0.001
+  policy_model: best_recurrent
+  torch_threads: 2
+simulation:
+  seeds:
+  - 7
+  - 17
+  - 27
+  - 37
+  - 47
+  theta_hi: 0.85
+  theta_safe: 0.7
+  weights:
+  - 0.4
+  - 0.3
+  - 0.2
+  - 0.1
+  nodes:
+    memory_capacity_mb:
+    - 8192
+    - 16384
+    area_km: 10.0
+    base_latency_ms: 2.0
+    latency_ms_per_km: 7.0
+    processing_p0_ms: 5.0
+  services:
+    memory_requirement_mb:
+    - 256
+    - 1024
+    state_size_mb:
+    - 32
+    - 256
+    channel_scale:
+    - 0.14
+    - 0.12
+    - 0.16
+    - 0.13
+    degraded_latency_ms: 35.0
+  network:
+    bandwidth_mbps:
+    - 100
+    - 1000
+    downtime_seconds: 1.0
+  fcm:
+    persistence: 3
+    cooldown_slots: 10
+    tau: 0.03
+    alpha: 0.5
+    beta: 0.3
+    gamma: 0.2
+    latency_gain_weight: 0.05
+  sla_latency_ms: 120.0
+scenarios:
+  default:
+    bandwidth_mbps:
+    - 100
+    - 1000
+    state_size_mb:
+    - 32
+    - 256
+  slow_links:
+    bandwidth_mbps:
+    - 8
+    - 40
+    state_size_mb:
+    - 64
+    - 256
+sensitivity:
+  seeds:
+  - 7
+  - 17
+  - 27
+  horizons:
+  - 5
+  - 8
+  - 10
+  persistence:
+  - 1
+  - 3
+  - 5
+  tau:
+  - 0.0
+  - 0.03
+  - 0.08
+  theta_safe:
+  - 0.7
+  - 0.8
+  - 0.85
+  weights:
+  - - 0.7
+    - 0.2
+    - 0.1
+  - - 0.5
+    - 0.3
+    - 0.2
+  - - 0.3
+    - 0.4
+    - 0.3
+  enabled: true

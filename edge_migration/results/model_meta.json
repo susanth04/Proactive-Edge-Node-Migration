@@ -1,0 +1,7 @@
+{
+  "selected_model": "LSTM",
+  "validation_rmse": {
+    "GRU": 0.06783477216959,
+    "LSTM": 0.06715144217014313
+  }
+}

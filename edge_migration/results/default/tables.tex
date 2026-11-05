@@ -1,0 +1,61 @@
+\paragraph{Forecast accuracy}
+\begin{tabular}{lrrr}
+\hline
+Model & RMSE & MAE & Inference (ms) \\
+\hline
+MovingAverage & 0.06837 & 0.0516 & 0.0004007 \\
+ARIMA & 0.06846 & 0.05179 & 0.001026 \\
+GRU & 0.06655 & 0.0509 & 0.04554 \\
+LSTM & 0.06598 & 0.05067 & 0.01401 \\
+\hline
+\end{tabular}
+
+
+\paragraph{Policy comparison (default)}
+\begin{tabular}{lrrrrrrrr}
+\hline
+Policy & Overload (\%) & Latency (ms) & Migrations & Unnecessary (\%) & Load std & SLA violation (\%) & Migration cost (s) & No feasible \\
+\hline
+RT & $0.5947 \pm 0.1524$ & $51.43 \pm 1.758$ & $187.8 \pm 48.13$ & $16.92 \pm 2.426$ & $0.06698 \pm 0.001024$ & $0.7028 \pm 0.1794$ & $669.1 \pm 257.9$ & $0 \pm 0$ \\
+RT-CD & $0.2888 \pm 0.08566$ & $52.25 \pm 0.9359$ & $91.2 \pm 27.05$ & $35.26 \pm 5.86$ & $0.06969 \pm 0.003613$ & $0.3437 \pm 0.1039$ & $325.9 \pm 134.6$ & $0 \pm 0$ \\
+FLL & $1.055 \pm 0.2494$ & $52.31 \pm 3.682$ & $16 \pm 5.612$ & $16.6 \pm 10.67$ & $0.08885 \pm 0.003434$ & $1.288 \pm 0.3246$ & $54.46 \pm 22.65$ & $0 \pm 0$ \\
+FCM & $1.581 \pm 0.4164$ & $50.9 \pm 2.85$ & $5.8 \pm 1.095$ & $3.333 \pm 7.454$ & $0.09592 \pm 0.005579$ & $2.001 \pm 0.5647$ & $19.53 \pm 3.335$ & $48.8 \pm 6.611$ \\
+\hline
+\end{tabular}
+
+
+\paragraph{FCM sensitivity (default)}
+\begin{tabular}{lrrr}
+\hline
+Parameter & Setting & Overload (\%) & Migrations \\
+\hline
+horizon & 5 & $1.599 \pm 0.5763$ & $6.333 \pm 0.5774$ \\
+horizon & 8 & $1.599 \pm 0.5763$ & $6.333 \pm 0.5774$ \\
+horizon & 10 & $1.599 \pm 0.5763$ & $6.333 \pm 0.5774$ \\
+persistence & 1 & $1.193 \pm 0.2548$ & $6.667 \pm 0.5774$ \\
+persistence & 3 & $1.599 \pm 0.5763$ & $6.333 \pm 0.5774$ \\
+persistence & 5 & $1.747 \pm 0.5159$ & $6 \pm 1$ \\
+tau & 0.0 & $1.599 \pm 0.5763$ & $6.333 \pm 0.5774$ \\
+tau & 0.03 & $1.599 \pm 0.5763$ & $6.333 \pm 0.5774$ \\
+tau & 0.08 & $1.599 \pm 0.5763$ & $6.333 \pm 0.5774$ \\
+theta_safe & 0.7 & $1.599 \pm 0.5763$ & $6.333 \pm 0.5774$ \\
+theta_safe & 0.8 & $1.194 \pm 0.3896$ & $8 \pm 1$ \\
+theta_safe & 0.85 & $1.187 \pm 0.3993$ & $8.333 \pm 1.528$ \\
+weights & 0.7,0.2,0.1 & $1.617 \pm 0.5604$ & $6.333 \pm 0.5774$ \\
+weights & 0.5,0.3,0.2 & $1.599 \pm 0.5763$ & $6.333 \pm 0.5774$ \\
+weights & 0.3,0.4,0.3 & $1.591 \pm 0.5835$ & $6.667 \pm 0.5774$ \\
+\hline
+\end{tabular}
+
+
+\paragraph{FCM ablation (default)}
+\begin{tabular}{lrrrr}
+\hline
+Variant & Overload (\%) & Migrations & Migration cost (s) & Unnecessary (\%) \\
+\hline
+FCM-full & $1.581 \pm 0.4164$ & $5.8 \pm 1.095$ & $19.53 \pm 3.335$ & $3.333 \pm 7.454$ \\
+FCM-no-safe-filter & $1.163 \pm 0.2946$ & $9.4 \pm 2.074$ & $29.29 \pm 6.812$ & $3.485 \pm 4.779$ \\
+FCM-no-cooldown & $1.581 \pm 0.4164$ & $5.8 \pm 1.095$ & $19.53 \pm 3.335$ & $3.333 \pm 7.454$ \\
+FCM-persistence-1 & $1.225 \pm 0.3129$ & $6 \pm 1.225$ & $21.31 \pm 4.523$ & $2.857 \pm 6.389$ \\
+\hline
+\end{tabular}

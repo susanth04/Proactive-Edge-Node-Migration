@@ -1,0 +1,12 @@
+.env*
+!.env.example
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+**/node_modules/
+**/.next/
+.hallmark/
+*.tsbuildinfo
+*.log
+.DS_Store

@@ -6,6 +6,9 @@ data:
   slots_per_day: 1440
   days: 11
   nodes: 10
+  node_count_range:
+  - 2
+  - 20
   services: 30
   channels:
   - cpu

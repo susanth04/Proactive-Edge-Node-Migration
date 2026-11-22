@@ -68,7 +68,7 @@ def train_models(config: dict[str, Any], results_dir: Path, traces_dir: Path) ->
     environment = Environment(config, traces, seed)
     test_composites: dict[str, tuple[np.ndarray, np.ndarray]] = {}
     validation_scores: dict[str, float] = {}
-    model_names = ["MovingAverage", "ARIMA", "GRU", "LSTM"]
+    model_names = ["MovingAverage", "ARIMA", "XGBoost", "GRU", "LSTM"]
     for name in model_names:
         model = make_model(name, forecast_cfg, seed)
         if name in {"GRU", "LSTM"}:

@@ -78,6 +78,48 @@ def make_plots(results_dir: Path, experiment_meta: dict[str, Any],
     path = results_dir / "policy_comparison.png"
     fig.tight_layout(); fig.savefig(path, dpi=300); plt.close(fig); outputs.append(path)
 
+    # Dedicated Migration Cost & Latency Trade-off Figure
+    fig, (ax_cost, ax_tradeoff) = plt.subplots(1, 2, figsize=(9.5, 4.0))
+    colors = ["#2b5c8f", "#4682b4", "#e67e22", "#27ae60"]
+
+    # (a) Total Migration Cost (seconds) on log scale
+    costs = performance["Total migration cost (s)"]
+    cost_err = performance.get("Total migration cost (s) std", pd.Series(np.zeros(len(performance))))
+    bars = ax_cost.bar(x, costs, yerr=cost_err, capsize=4, color=colors, edgecolor="black", alpha=0.85)
+    ax_cost.set_yscale("log")
+    ax_cost.set_ylabel("Total Migration Cost (s, log scale)")
+    ax_cost.set_xticks(x, performance["Policy"])
+    ax_cost.set_title("(a) Migration Cost by Policy")
+    ax_cost.grid(axis="y", alpha=0.3, which="both")
+    for bar, val in zip(bars, costs):
+        ax_cost.text(bar.get_x() + bar.get_width() / 2, max(val * 1.15, 1.2),
+                     f"{val:.1f}s", ha="center", va="bottom", fontsize=8.5, weight="bold")
+
+    # (b) Latency vs Migration Cost Trade-off
+    latencies = performance["Avg latency (ms)"]
+    lat_err = performance.get("Avg latency (ms) std", pd.Series(np.zeros(len(performance))))
+    for i, pol in enumerate(performance["Policy"]):
+        ax_tradeoff.errorbar(costs.iloc[i], latencies.iloc[i],
+                             xerr=cost_err.iloc[i], yerr=lat_err.iloc[i],
+                             marker="o", markersize=8, color=colors[i], capsize=3,
+                             label=pol)
+        offset_y = 0.3 if i % 2 == 0 else -0.5
+        ax_tradeoff.annotate(pol, (costs.iloc[i], latencies.iloc[i]),
+                             textcoords="offset points", xytext=(8, offset_y * 10),
+                             weight="bold", fontsize=9, color=colors[i])
+    ax_tradeoff.set_xscale("log")
+    ax_tradeoff.set_xlabel("Total Migration Cost (s, log scale)")
+    ax_tradeoff.set_ylabel("Average Latency (ms)")
+    ax_tradeoff.set_title("(b) Latency vs Migration Cost Trade-off")
+    ax_tradeoff.grid(alpha=0.3, which="both")
+    ax_tradeoff.legend(loc="upper right", framealpha=0.8)
+
+    fig.tight_layout()
+    cost_lat_path = results_dir / "policy_cost_latency.png"
+    fig.savefig(cost_lat_path, dpi=300)
+    plt.close(fig)
+    outputs.append(cost_lat_path)
+
     sensitivity: pd.DataFrame = experiment_meta["sensitivity"]
     if not sensitivity.empty:
         parameters = ("horizon", "persistence", "tau", "theta_safe", "weights")

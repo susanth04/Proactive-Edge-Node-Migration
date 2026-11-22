@@ -9,6 +9,7 @@ import numpy as np
 import torch
 from torch import nn
 from statsmodels.tsa.arima.model import ARIMA
+import xgboost as xgb
 
 
 class MovingAverage:
@@ -52,6 +53,49 @@ class ARIMAForecaster:
         result = window_mean[..., None, :] + decay * deviation[..., None, :]
         result = np.clip(result, 0, 1).astype(np.float32)
         return result
+
+
+class XGBoostForecaster:
+    """Multi-output gradient boosted tree forecaster using window statistics and lag features."""
+
+    def __init__(self, horizon: int, seed: int = 7, n_estimators: int = 40, max_depth: int = 4):
+        self.horizon = int(horizon)
+        self.seed = int(seed)
+        self.n_estimators = n_estimators
+        self.max_depth = max_depth
+        self.model = xgb.XGBRegressor(
+            n_estimators=self.n_estimators,
+            max_depth=self.max_depth,
+            learning_rate=0.1,
+            n_jobs=2,
+            random_state=self.seed,
+            objective="reg:squarederror",
+            tree_method="hist",
+        )
+
+    def _extract_features(self, x: np.ndarray) -> np.ndarray:
+        x = np.asarray(x, dtype=np.float32)
+        recent = x[:, -1, :]
+        lag1 = x[:, -2, :4] if x.shape[1] >= 2 else x[:, -1, :4]
+        lag2 = x[:, -3, :4] if x.shape[1] >= 3 else x[:, -1, :4]
+        win_mean = x[:, :, :4].mean(axis=1)
+        win_std = x[:, :, :4].std(axis=1)
+        trend = x[:, -1, :4] - (x[:, -5, :4] if x.shape[1] >= 5 else x[:, 0, :4])
+        return np.concatenate([recent, lag1, lag2, win_mean, win_std, trend], axis=-1)
+
+    def fit(self, x: np.ndarray, y: np.ndarray, validation_data: Any = None) -> "XGBoostForecaster":
+        stride = max(1, len(x) // 12000)
+        X_sub = x[::stride]
+        Y_sub = y[::stride]
+        X_feat = self._extract_features(X_sub)
+        Y_flat = Y_sub.reshape(len(Y_sub), -1)
+        self.model.fit(X_feat, Y_flat)
+        return self
+
+    def predict(self, x: np.ndarray) -> np.ndarray:
+        X_feat = self._extract_features(x)
+        preds = self.model.predict(X_feat)
+        return np.clip(preds.reshape(len(x), self.horizon, 4), 0, 1).astype(np.float32)
 
 
 class _RecurrentNetwork(nn.Module):
@@ -144,7 +188,7 @@ class RecurrentForecaster:
 
 
 def make_model(name: str, config: dict[str, Any], seed: int):
-    """Construct one of the four supported forecasters."""
+    """Construct one of the supported forecasters."""
     horizon = int(config["horizon"])
     if name == "MovingAverage":
         model = MovingAverage()
@@ -152,6 +196,8 @@ def make_model(name: str, config: dict[str, Any], seed: int):
         return model
     if name == "ARIMA":
         return ARIMAForecaster(horizon, tuple(config["arima_order"]))
+    if name == "XGBoost":
+        return XGBoostForecaster(horizon, seed)
     if name in {"GRU", "LSTM"}:
         return RecurrentForecaster(name, config, seed)
     raise ValueError(f"Unknown forecasting model: {name}")

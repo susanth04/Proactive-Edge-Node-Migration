@@ -1,0 +1,25 @@
+\begin{table}[t]
+\caption{Statistical significance of FCM improvements (paired $t$-test across 5 seeds).}
+\label{tab:significance}
+\centering
+\scriptsize
+\begin{tabular}{llcccc}
+\toprule
+Comparison & Metric & Baseline & FCM & Diff (\%) & $p$-value \\
+\midrule
+FCM vs RT & Migrations & 193.00 $\pm$ 49.76 & 5.40 $\pm$ 1.52 & -97.2\% & 0.0011 (**) \\
+FCM vs RT & Migration Cost (s) & 12206.72 $\pm$ 4816.57 & 234.31 $\pm$ 86.57 & -98.1\% & 0.0051 (**) \\
+FCM vs RT & Overload Time (%) & 0.61 $\pm$ 0.16 & 1.71 $\pm$ 0.43 & +180.2\% & 0.0069 (**) \\
+FCM vs RT & SLA Violation (%) & 0.74 $\pm$ 0.20 & 2.18 $\pm$ 0.58 & +195.5\% & 0.0072 (**) \\
+FCM vs RT-CD & Migrations & 100.00 $\pm$ 28.21 & 5.40 $\pm$ 1.52 & -94.6\% & 0.0017 (**) \\
+FCM vs RT-CD & Migration Cost (s) & 6540.11 $\pm$ 2678.91 & 234.31 $\pm$ 86.57 & -96.4\% & 0.0062 (**) \\
+FCM vs RT-CD & Overload Time (%) & 0.32 $\pm$ 0.09 & 1.71 $\pm$ 0.43 & +430.2\% & 0.0024 (**) \\
+FCM vs RT-CD & SLA Violation (%) & 0.39 $\pm$ 0.11 & 2.18 $\pm$ 0.58 & +453.7\% & 0.0026 (**) \\
+FCM vs FLL & Migrations & 37.00 $\pm$ 15.89 & 5.40 $\pm$ 1.52 & -85.4\% & 0.0130 (*) \\
+FCM vs FLL & Migration Cost (s) & 2426.29 $\pm$ 1172.45 & 234.31 $\pm$ 86.57 & -90.3\% & 0.0167 (*) \\
+FCM vs FLL & Overload Time (%) & 1.08 $\pm$ 0.34 & 1.71 $\pm$ 0.43 & +58.5\% & 0.0117 (*) \\
+FCM vs FLL & SLA Violation (%) & 1.33 $\pm$ 0.46 & 2.18 $\pm$ 0.58 & +64.3\% & 0.0108 (*) \\
+\bottomrule
+\multicolumn{6}{l}{\scriptsize $^*p < 0.05$, $^{**}p < 0.01$, $^{***}p < 0.001$, ns: not significant.}
+\end{tabular}
+\end{table}

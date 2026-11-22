@@ -14,6 +14,9 @@ from forecasting.train import train_models
 from sim.run_experiments import run_experiments
 from analysis.make_tables_and_plots import make_forecast_plots, make_plots
 from analysis.export_tables import export_tables
+from analysis.make_architecture_figure import draw_architecture_diagram
+from analysis.significance import evaluate_significance
+from sim.evaluate_real_trace import evaluate_on_google_trace
 from sim.fcm_sensitivity import format_gain_diagnostics
 
 
@@ -62,6 +65,7 @@ def run(config_path: Path) -> None:
     models, train_meta = train_models(config, results_dir, traces_dir)
     chosen_model = models[train_meta["policy_model"]]
     forecast_figures = make_forecast_plots(results_dir, train_meta)
+    arch_fig = draw_architecture_diagram(results_dir / "architecture.png")
 
     print("\nForecast accuracy (composite node load):")
     print(train_meta["accuracy"].to_string(index=False, float_format=lambda x: f"{x:.5f}"))
@@ -83,6 +87,8 @@ def run(config_path: Path) -> None:
             int(train_meta["test_start"]), int(train_meta["test_end"]))
         figures = make_plots(scenario_dir, experiment_meta, performance)
         tex_path = export_tables(results_dir, scenario_name)
+        sig_df, sig_tex = evaluate_significance(scenario_dir)
+        print(f"  Significance analysis generated for {scenario_name}.")
         raw = experiment_meta["raw"]
         migration_count = raw["Migrations"].sum()
         mean_slots = (raw["Mean migration slots"] * raw["Migrations"]).sum() / max(1, migration_count)
@@ -97,6 +103,10 @@ def run(config_path: Path) -> None:
         print(performance.to_string(index=False, float_format=lambda x: f"{x:.4f}"))
         print(f"  Tables: {tex_path.relative_to(project)}")
         print(f"  Scenario figures: {', '.join(path.name for path in figures)}")
+
+    print("\nEvaluating on real Google Cluster Trace:")
+    real_trace_df = evaluate_on_google_trace(config_path, results_dir)
+
     print("\nOutput files:")
     for path in sorted([*results_dir.rglob("*"), *traces_dir.glob("*")]):
         if path.is_file():

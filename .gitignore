@@ -10,3 +10,5 @@ venv/
 *.tsbuildinfo
 *.log
 .DS_Store
+edge_migration/data/real/
+*.csv.gz
